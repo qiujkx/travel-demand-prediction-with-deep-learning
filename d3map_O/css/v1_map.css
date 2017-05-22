@@ -1,0 +1,28 @@
+div#map1{
+	margin-left: 225px;
+	width: 1300px;
+	height: 775px;
+	margin-top: 10px;
+}
+
+/* d3 SVG positioning */
+div#map1 svg {
+	position: relative;
+}
+
+#form_comparison label {
+    display: block;
+}
+
+div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 120px;					
+    height: 55px;					
+    padding: 2px;	
+    font: 16px sans-serif;	
+    background: #D8BFD8;
+    border: 2px;		
+    border-radius: 8px;			
+    pointer-events: none;	
+}
