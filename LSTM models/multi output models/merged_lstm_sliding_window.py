@@ -1,4 +1,5 @@
 from single_LSTM_architectures import *
+from rmv_seas import remove_trend
 import tensorflow as tf
 import functools
 import numpy as np
@@ -364,24 +365,12 @@ class Merged_Model:
         LGA_RMSE.to_csv('data/LGA_MO.csv', index=False, sep="\t")
         
 
-def generate_lags(filename, num_lags, bootstrap_size):
+def generate_lags(data, num_lags, bootstrap_size):
     assert bootstrap_size > num_lags
 
-    # read data from file
-    f = open(filename)
-    series = []
-    removed_seasonality = []
-    removed_std = []
-    missings = []
-    for line in f:
-        splt = line.split(",")
-        series.append(float(splt[0]))
-        removed_seasonality.append(float(splt[1]))
-        removed_std.append(float(splt[2]))
-    series = np.array(series)
-    removed_seasonality = np.array(removed_seasonality)
-    removed_std = np.array(removed_std)
-    f.close()
+    series = np.array(data['time series'].values)
+    removed_seasonality = np.array(data['removed seasonality'].values)
+    removed_std = np.array(data['removed std'].values)
 
     # generate lags
     X = []
@@ -392,22 +381,26 @@ def generate_lags(filename, num_lags, bootstrap_size):
     y = series[bootstrap_size:]
     removed_seasonality = removed_seasonality[bootstrap_size:]
     removed_std = removed_std[bootstrap_size:]
-    missings = missings[bootstrap_size:]
     assert X.shape[0] == y.shape[0]
 
     X = np.reshape(X, (X.shape[0], X.shape[1], 1))
 
     return X, y, removed_seasonality, removed_std
 
-
 def main():
 
+    loc_fixed = 23
+
+    df1 = remove_trend(loc_fixed, 24)
+    df2 = remove_trend(loc_fixed, 21)
+    df3 = remove_trend(loc_fixed, 22)
+
     X1, y1, removed_seasonality1, removed_std1 = generate_lags(
-        'data/seasonality_16_27.csv', 20, 2 * 24)
+            df1, 20, 2 * 24)
     X2, y2, removed_seasonality2, removed_std2 = generate_lags(
-        'data/seasonality_16_26.csv', 20, 2 * 24)
+            df2, 20, 2 * 24)
     X3, y3, removed_seasonality3, removed_std3 = generate_lags(
-        'data/seasonality_16_28.csv', 20, 2 * 24)
+            df3, 20, 2 * 24)
 
     merged_model = Merged_Model()
     merged_model.run_epochs(X1, X2, X3, y1, y2, y3, removed_seasonality1,
