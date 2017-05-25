@@ -59,7 +59,7 @@ def load_csv(file, group_columns = [], categorical_columns = [], meta_columns = 
         with_dummies = pd.get_dummies(group[input_columns], columns = categorical_columns)
         # Create dummy variables
         X = with_dummies.as_matrix()
-        print X.shape
+
         Y = group.as_matrix(columns = [output_column])
         
         yield (key, X, Y, group[(meta_columns + input_columns + [output_column])])
