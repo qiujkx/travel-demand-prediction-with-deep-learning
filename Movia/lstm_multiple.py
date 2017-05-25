@@ -125,7 +125,7 @@ class LstmModel:
 def main():    
 
     # Configuration
-    group_columns = []
+    group_columns = ['LinkRef']
     #categorial_columns = ['LinkRef', 'DayType', 'TimeOfDayClass']
     categorical_columns = []
     meta_columns = ['JourneyRef', 'DateTime', 'LineDirectionLinkOrder', 'LinkName']
@@ -145,6 +145,8 @@ def main():
 
         X_test = X[n_test]
         y_test = Y[n_test]
+
+        tf.reset_default_graph()
 
         config = LstmConfig()
         model = LstmModel(config)
