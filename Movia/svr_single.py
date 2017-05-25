@@ -27,18 +27,15 @@ for group, X, Y, meta in data:
 
     Y_train_pred = clf.predict(X_train).reshape(-1, 1)
     
-    metric_train_mape = (np.abs(Y_train_pred - Y_train)/Y_train).mean()
-    print('Train MAPE:', metric_train_mape)
+    metric_train_rmse = np.sqrt(np.mean((np.array(Y_train_pred) - np.array(Y_train))**2))
+    print('Train RMSE:', metric_train_rmse)
     
     # Test
 
     Y_test_pred = clf.predict(X_test).reshape(-1, 1)
 
-    metric_test_mape = (np.abs(Y_test_pred - Y_test)/Y_test).mean()
-    print('Test MAPE:', metric_test_mape)
+    metric_test_rmse = np.sqrt(np.mean((np.array(Y_test_pred) - np.array(Y_test))**2))
+    print('Test RMSE:', metric_test_rmse)
 
     meta_test['LinkTravelTime_Predicted'] = Y_test_pred
     results = results.append(meta_test, ignore_index = True)
-
-# Write predictions to CSV
-results.to_csv('../data/results_svr_single.csv', index = False, encoding = 'utf-8')
