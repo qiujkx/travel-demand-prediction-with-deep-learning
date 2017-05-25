@@ -1,5 +1,5 @@
 from data_parsing import *
-from sklearn import linear_model
+from sklearn.svm import SVR
 import sklearn.preprocessing as pp
 
 # Configuration
@@ -21,14 +21,14 @@ for group, X, Y, meta in data:
     Y_train, Y_test = np.split(Y, [int(.8*len(Y))])
     meta_train, meta_test = np.split(meta, [int(.8*len(meta))])
 
-    clf = linear_model.LinearRegression()
+    clf = SVR()
     clf.fit(X_train, Y_train[:,0]) 
 
     Y_train_pred = clf.predict(X_train).reshape(-1, 1)
     
     metric_train_mape = (np.abs(Y_train_pred - Y_train)/Y_train).mean()
     print('Train MAPE:', metric_train_mape)
-
+    
     # Test
 
     Y_test_pred = clf.predict(X_test).reshape(-1, 1)
@@ -41,4 +41,3 @@ for group, X, Y, meta in data:
 
 # Write predictions to CSV
 results.to_csv('../data/results_lr_single.csv', index = False, encoding = 'utf-8')
-    

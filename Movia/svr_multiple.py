@@ -1,10 +1,10 @@
 from data_parsing import *
-from sklearn import linear_model
+from sklearn.svm import SVR
 import sklearn.preprocessing as pp
 
 # Configuration
-group_columns = []
-categorial_columns = ['LinkRef', 'DayType', 'TimeOfDayClass']
+group_columns = ['LinkRef']
+categorial_columns = ['DayType', 'TimeOfDayClass']
 meta_columns = ['JourneyRef', 'DateTime', 'LineDirectionLinkOrder', 'LinkName']
 
 results = pd.DataFrame()
@@ -13,7 +13,7 @@ results = pd.DataFrame()
 data = load_csv('../data/4A_201701_Consistent.csv', group_columns = group_columns, categorial_columns = categorial_columns, meta_columns = meta_columns)
 
 for group, X, Y, meta in data:
-    
+
     print('Group:', group)
 
     # Split data into train and test    
@@ -21,13 +21,15 @@ for group, X, Y, meta in data:
     Y_train, Y_test = np.split(Y, [int(.8*len(Y))])
     meta_train, meta_test = np.split(meta, [int(.8*len(meta))])
 
-    clf = linear_model.LinearRegression()
+    clf = SVR()
     clf.fit(X_train, Y_train[:,0]) 
 
     Y_train_pred = clf.predict(X_train).reshape(-1, 1)
-    
+
     metric_train_mape = (np.abs(Y_train_pred - Y_train)/Y_train).mean()
     print('Train MAPE:', metric_train_mape)
+    
+    metric_train_mape = (np.abs(Y_train_pred - Y_train)/Y_train).mean()
 
     # Test
 
@@ -38,7 +40,6 @@ for group, X, Y, meta in data:
 
     meta_test['LinkTravelTime_Predicted'] = Y_test_pred
     results = results.append(meta_test, ignore_index = True)
-
-# Write predictions to CSV
-results.to_csv('../data/results_lr_single.csv', index = False, encoding = 'utf-8')
     
+# Write predictions to CSV
+results.to_csv('../data/results_lr_multiple.csv', index = False, encoding = 'utf-8')
