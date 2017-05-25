@@ -4,13 +4,14 @@ import sklearn.preprocessing as pp
 
 # Configuration
 group_columns = ['LinkRef']
-categorial_columns = ['DayType', 'TimeOfDayClass']
+#categorial_columns = ['DayType', 'TimeOfDayClass']
+categorical_columns = []
 meta_columns = ['JourneyRef', 'DateTime', 'LineDirectionLinkOrder', 'LinkName']
 
 results = pd.DataFrame()
 
 # Load and pre-process data
-data = load_csv('../data/4A_201701_Consistent.csv', group_columns = group_columns, categorial_columns = categorial_columns, meta_columns = meta_columns)
+data = load_csv('../data/4A_201701_Consistent.csv', group_columns = group_columns, categorical_columns = categorical_columns, meta_columns = meta_columns)
 
 for group, X, Y, meta in data:
 
