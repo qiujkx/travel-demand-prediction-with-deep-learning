@@ -40,4 +40,4 @@ for group, X, Y, meta in data:
     results = results.append(meta_test, ignore_index = True)
 
 # Write predictions to CSV
-results.to_csv('../data/results_lr_single.csv', index = False, encoding = 'utf-8')
+results.to_csv('../data/results_svr_single.csv', index = False, encoding = 'utf-8')
