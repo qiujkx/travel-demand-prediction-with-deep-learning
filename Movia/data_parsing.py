@@ -1,6 +1,14 @@
 import numpy as np
 import pandas as pd
 
+def detrend_timeseries(series):
+
+    X = series.values
+    diff = list()
+    for i in range(1, len(X)):
+        value = X[i] - X[i - 1]
+        diff.append(value)
+
 def load_csv(file, group_columns = [], categorical_columns = [], meta_columns = []):
     data = pd.read_csv(file, sep=';')
 
@@ -44,7 +52,7 @@ def load_csv(file, group_columns = [], categorical_columns = [], meta_columns = 
     for i in range(1, j + 1):
         data = data[(data['LinkTravelTime_J' + str(i)] > 0)]
     """
-    data = data[(26 <= data.LineDirectionLinkOrder) & (data.LineDirectionLinkOrder <= 32)]
+    data = data[(26 <= data.LineDirectionLinkOrder) & (data.LineDirectionLinkOrder <= 26)]
 
     print('Preprosessed data set size:', len(data))
 
@@ -57,9 +65,10 @@ def load_csv(file, group_columns = [], categorical_columns = [], meta_columns = 
 
     for key, group in grouping:
         with_dummies = pd.get_dummies(group[input_columns], columns = categorical_columns)
+        print with_dummies.head()
         # Create dummy variables
         X = with_dummies.as_matrix()
 
         Y = group.as_matrix(columns = [output_column])
-        
+
         yield (key, X, Y, group[(meta_columns + input_columns + [output_column])])
