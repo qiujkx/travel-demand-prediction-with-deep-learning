@@ -22,7 +22,7 @@ def data_preprocessing():
 	data.ix[((7 < time.hour) & (time.hour < 9) & (data['DayType'] == 1)), 'TimeOfDayClass'] = 'PEEK' 
 	data.ix[((15 < time.hour) & (time.hour < 17) & (data['DayType'] == 1)), 'TimeOfDayClass'] = 'PEEK'
 
-	data = data[(26 <= data.LineDirectionLinkOrder) & (data.LineDirectionLinkOrder <= 28)]
+	data = data[(27 <= data.LineDirectionLinkOrder) & (data.LineDirectionLinkOrder <= 29)]
 
 	grouping = data.groupby(['LinkRef'])
 
@@ -217,6 +217,8 @@ def main():
 	groups = data_preprocessing()
 
 	for key, group in groups:
+
+		print "\n## %s ##"  % group["LinkName"].values[0]
 
 		X, y = generate_features(group)
 		X_train, y_train, X_test, y_test = split_into_train_test(X, y)
