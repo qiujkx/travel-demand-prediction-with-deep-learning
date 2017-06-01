@@ -20,12 +20,19 @@ def data_preprocessing():
 	data['TimeOfDayClass'] = 'NO_PEEK' 
 	data['Hour'] = time.hour
 	data.ix[((7 < time.hour) & (time.hour < 9) & (data['DayType'] == 1)), 'TimeOfDayClass'] = 'PEEK' 
-	data.ix[((15 < time.hour) & (time.hour < 17) & (data['DayType'] == 1)), 'TimeOfDayClass'] = 'PEEK' 
-	data = data[(27 <= data.LineDirectionLinkOrder) & (data.LineDirectionLinkOrder <= 27)]
+	data.ix[((15 < time.hour) & (time.hour < 17) & (data['DayType'] == 1)), 'TimeOfDayClass'] = 'PEEK'
+
+	data = data[(26 <= data.LineDirectionLinkOrder) & (data.LineDirectionLinkOrder <= 32)]
+
+	grouping = data.groupby(['LinkRef'])
+
+	return grouping
+
+
+def generate_features(data):
 
 	data = data.sort_values("DateTime", ascending=False)
 	data = data.set_index(np.arange(0,data.shape[0],1))
-
 
 	num_lags = 20
 	num_dummies = 2
@@ -74,6 +81,7 @@ def pred_linear_model(X_train, y_train, X_test, y_test):
 
 	return train_rmse, test_rmse
 
+
 def pred_SVR(X_train, y_train, X_test, y_test):
 
 	clf = SVR()
@@ -87,6 +95,7 @@ def pred_SVR(X_train, y_train, X_test, y_test):
 
 	return train_rmse, test_rmse
 
+
 ### LSTM ###
 
 def lazy_property(function):
@@ -99,6 +108,7 @@ def lazy_property(function):
             setattr(self, attribute, function(self))
         return getattr(self, attribute)
     return wrapper
+
 
 class LstmConfig:
 
@@ -204,27 +214,33 @@ class LstmModel:
 
 def main():
     
-	X, y = data_preprocessing()
-	X_train, y_train, X_test, y_test = split_into_train_test(X, y)
+	groups = data_preprocessing()
 
-	lr_train_rmse, lr_test_rmse = pred_linear_model(X_train, y_train, X_test, y_test)
-	svr_train_rmse, svr_test_rmse = pred_SVR(X_train, y_train, X_test, y_test)
+	for key, group in groups:
 
-	config = LstmConfig()
-	model = LstmModel(config)
-	lstm_train_rmse, lstm_test_rmse = model.pred_LSTM(X_train, y_train, X_test, y_test)
+		X, y = generate_features(group)
+		X_train, y_train, X_test, y_test = split_into_train_test(X, y)
 
-	df = pd.DataFrame()
+		lr_train_rmse, lr_test_rmse = pred_linear_model(X_train, y_train, X_test, y_test)
+		svr_train_rmse, svr_test_rmse = pred_SVR(X_train, y_train, X_test, y_test)
 
-	df["lr_train"] = [lr_train_rmse]
-	df["svr_train"] = [svr_train_rmse]
-	df["lstm_train"] = [lstm_train_rmse]
+		tf.reset_default_graph()
 
-	df["lr_test"] = [lr_test_rmse]
-	df["svr_test"] = [svr_test_rmse]
-	df["lstm_test"] = [lstm_test_rmse]
+		config = LstmConfig()
+		model = LstmModel(config)
+		lstm_train_rmse, lstm_test_rmse = model.pred_LSTM(X_train, y_train, X_test, y_test)
 
-	print tabulate(df, headers='keys', tablefmt='psql')
+		df = pd.DataFrame()
+
+		df["lr_train"] = [lr_train_rmse]
+		df["svr_train"] = [svr_train_rmse]
+		df["lstm_train"] = [lstm_train_rmse]
+
+		df["lr_test"] = [lr_test_rmse]
+		df["svr_test"] = [svr_test_rmse]
+		df["lstm_test"] = [lstm_test_rmse]
+
+		print tabulate(df, headers='keys', tablefmt='psql')
 
 
 if __name__ == "__main__":
