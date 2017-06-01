@@ -22,7 +22,7 @@ def data_preprocessing():
 	data.ix[((7 < time.hour) & (time.hour < 9) & (data['DayType'] == 1)), 'TimeOfDayClass'] = 'PEEK' 
 	data.ix[((15 < time.hour) & (time.hour < 17) & (data['DayType'] == 1)), 'TimeOfDayClass'] = 'PEEK'
 
-	data = data[(26 <= data.LineDirectionLinkOrder) & (data.LineDirectionLinkOrder <= 32)]
+	data = data[(26 <= data.LineDirectionLinkOrder) & (data.LineDirectionLinkOrder <= 28)]
 
 	grouping = data.groupby(['LinkRef'])
 
@@ -117,7 +117,7 @@ class LstmConfig:
         self.batch_size = 256
         self.seq_len = 20
         self.learning_rate = 0.01
-        self.state_size = 128
+        self.state_size = 130
         self.num_layers = 1
         self.num_epochs = 10
         self.dropout_train = 0.25
@@ -231,10 +231,6 @@ def main():
 		lstm_train_rmse, lstm_test_rmse = model.pred_LSTM(X_train, y_train, X_test, y_test)
 
 		df = pd.DataFrame()
-
-		df["lr_train"] = [lr_train_rmse]
-		df["svr_train"] = [svr_train_rmse]
-		df["lstm_train"] = [lstm_train_rmse]
 
 		df["lr_test"] = [lr_test_rmse]
 		df["svr_test"] = [svr_test_rmse]
