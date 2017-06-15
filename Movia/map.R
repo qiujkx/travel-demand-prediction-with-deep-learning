@@ -19,5 +19,5 @@ m <- leaflet() %>%
   #addPolylines(data = expected_route, weight = 3, opacity = 1, stroke = T, color = ~color, popup = ~as.character(sectionRef)) %>%
   addPolylines(data = route_links, weight = 3, opacity = 1, stroke = T, popup = ~as.character(LinkName)) %>%
   addMarkers(data = stop_points[stop_points$isStopPoint == 1,], popup = ~as.character(stopPointName), icon = bus_icon)
-  
+
 m

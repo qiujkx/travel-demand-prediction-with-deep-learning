@@ -336,7 +336,7 @@ def data_preprocessing():
 	data.ix[((7 < time.hour) & (time.hour < 9) & (data['DayType'] == 1)), 'TimeOfDayClass'] = 'PEEK' 
 	data.ix[((15 < time.hour) & (time.hour < 17) & (data['DayType'] == 1)), 'TimeOfDayClass'] = 'PEEK'
 
-	data = data[(27 <= data.LineDirectionLinkOrder) & (data.LineDirectionLinkOrder <= 29)]
+	data = data[(26 <= data.LineDirectionLinkOrder) & (data.LineDirectionLinkOrder <= 28)]
 
 	grouping = data.groupby(['LinkRef'])
 

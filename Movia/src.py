@@ -22,7 +22,7 @@ def data_preprocessing():
 	data.ix[((7 < time.hour) & (time.hour < 9) & (data['DayType'] == 1)), 'TimeOfDayClass'] = 'PEEK' 
 	data.ix[((15 < time.hour) & (time.hour < 17) & (data['DayType'] == 1)), 'TimeOfDayClass'] = 'PEEK'
 
-	data = data[(27 <= data.LineDirectionLinkOrder) & (data.LineDirectionLinkOrder <= 29)]
+	data = data[(26 <= data.LineDirectionLinkOrder) & (data.LineDirectionLinkOrder <= 28)]
 
 	grouping = data.groupby(['LinkRef'])
 
@@ -213,33 +213,33 @@ class LstmModel:
 
 
 def main():
-    
-	groups = data_preprocessing()
 
-	for key, group in groups:
+    groups = data_preprocessing()
 
-		print "\n## %s ##"  % group["LinkName"].values[0]
+    for key, group in groups:
 
-		X, y = generate_features(group)
-		X_train, y_train, X_test, y_test = split_into_train_test(X, y)
+        print "\n## %s ##"  % group["LinkName"].values[0]        
+        
+        X, y = generate_features(group)
+        X_train, y_train, X_test, y_test = split_into_train_test(X, y)
 
-		lr_train_rmse, lr_test_rmse = pred_linear_model(X_train, y_train, X_test, y_test)
-		svr_train_rmse, svr_test_rmse = pred_SVR(X_train, y_train, X_test, y_test)
+        lr_train_rmse, lr_test_rmse = pred_linear_model(X_train, y_train, X_test, y_test)
+        svr_train_rmse, svr_test_rmse = pred_SVR(X_train, y_train, X_test, y_test)
 
-		tf.reset_default_graph()
+        tf.reset_default_graph()
 
-		config = LstmConfig()
-		model = LstmModel(config)
-		lstm_train_rmse, lstm_test_rmse = model.pred_LSTM(X_train, y_train, X_test, y_test)
+        config = LstmConfig()
+        model = LstmModel(config)
+        lstm_train_rmse, lstm_test_rmse = model.pred_LSTM(X_train, y_train, X_test, y_test)
 
-		df = pd.DataFrame()
+        df = pd.DataFrame()
 
-		df["lr_test"] = [lr_test_rmse]
-		df["svr_test"] = [svr_test_rmse]
-		df["lstm_test"] = [lstm_test_rmse]
+        df["lr"] = [lr_test_rmse]
+        df["svr"] = [svr_test_rmse]
+        df["lstm"] = [lstm_test_rmse]
 
-		print tabulate(df, headers='keys', tablefmt='psql')
-
+        print tabulate(df, headers='keys', tablefmt='psql')
+        
 
 if __name__ == "__main__":
 	main()
